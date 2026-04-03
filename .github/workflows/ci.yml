@@ -65,6 +65,18 @@ jobs:
           cp -r dist-newstyle/build/x86_64-linux/ghc-*/stringfmt-*/doc/html/stringfmt/* docs/stringfmt/ || true
           cp -r dist-newstyle/build/x86_64-linux/ghc-*/logfmt-*/doc/html/logfmt/* docs/logfmt/ || true
           cp -r dist-newstyle/build/x86_64-linux/ghc-*/vtyfmt-*/doc/html/vtyfmt/* docs/vtyfmt/ || true
+          cat > docs/index.html <<'EOF'
+          <!DOCTYPE html>
+          <html><head><title>fmt — Haddocks</title></head>
+          <body>
+          <h1>fmt</h1>
+          <ul>
+          <li><a href="stringfmt/">stringfmt</a></li>
+          <li><a href="logfmt/">logfmt</a></li>
+          <li><a href="vtyfmt/">vtyfmt</a></li>
+          </ul>
+          </body></html>
+          EOF
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
