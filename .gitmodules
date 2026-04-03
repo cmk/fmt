@@ -1,0 +1,3 @@
+[submodule "scheme-extensions"]
+	path = scheme-extensions
+	url = git@github.com:cmk/scheme-extensions.git

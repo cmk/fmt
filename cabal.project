@@ -1,0 +1,9 @@
+packages:
+  stringfmt
+  logfmt
+  vtyfmt
+
+optional-packages:
+  scheme-extensions
+
+tests: True

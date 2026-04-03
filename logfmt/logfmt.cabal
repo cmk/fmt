@@ -1,0 +1,37 @@
+cabal-version: 2.0
+
+name:           logfmt
+version:        0.1.0
+synopsis:       Fast-logger formatting via stringfmt
+description:    LogStr-specialized formatting built on stringfmt.
+                Provides the bridge between stringfmt's generic Fmt type
+                and fast-logger's LogStr.
+category:       Text, System
+homepage:       https://github.com/cmk/logfmt#readme
+bug-reports:    https://github.com/cmk/logfmt/issues
+author:         Chris McKinlay
+maintainer:     Chris McKinlay
+copyright:      2020-2026 Chris McKinlay
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/cmk/fmt
+
+library
+  exposed-modules:
+      Data.Fmt.Log
+
+  hs-source-dirs:
+      src
+
+  build-depends:
+      base               >= 4.16  && < 5.0
+    , bytestring
+    , fast-logger
+    , stringfmt
+
+  default-language: Haskell2010
+  ghc-options: -Wall

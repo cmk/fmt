@@ -1,0 +1,34 @@
+cabal-version: 2.0
+
+name:           vtyfmt
+version:        0.0.1
+synopsis:       ANSI terminal formatting via stringfmt + vty color types.
+description:    Provides Fmt-style ANSI escape code combinators using
+                vty's Color type. No dependency on ansi-terminal or colour.
+category:       Text, Terminal
+author:         Chris McKinlay
+maintainer:     Chris McKinlay
+copyright:      2026 Chris McKinlay
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/cmk/fmt
+
+library
+  exposed-modules:
+      Data.Fmt.ANSI
+      Data.Fmt.ANSI.Code
+      Data.Fmt.ANSI.Type
+
+  hs-source-dirs: src
+
+  build-depends:
+      base       >= 4.16 && < 5
+    , stringfmt
+    , vty        >= 6.0
+
+  default-language: Haskell2010
+  ghc-options: -Wall

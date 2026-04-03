@@ -1,0 +1,7 @@
+dist-newstyle/
+cabal.project.local
+haddocks/
+.DS_Store
+*.swp
+*.swo
+*~

@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ghc: ['9.4', '9.6', '9.8']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: haskell-actions/setup@v2
+        with:
+          ghc-version: ${{ matrix.ghc }}
+
+      - name: Cache cabal store
+        uses: actions/cache@v4
+        with:
+          path: ~/.cabal/store
+          key: ${{ runner.os }}-ghc-${{ matrix.ghc }}-cabal-${{ hashFiles('**/*.cabal') }}
+          restore-keys: |
+            ${{ runner.os }}-ghc-${{ matrix.ghc }}-cabal-
+
+      - name: Build
+        run: cabal build all --enable-tests
+
+      - name: Test
+        run: cabal test all --enable-tests
+
+  haddock:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: haskell-actions/setup@v2
+        with:
+          ghc-version: '9.6'
+
+      - name: Cache cabal store
+        uses: actions/cache@v4
+        with:
+          path: ~/.cabal/store
+          key: ${{ runner.os }}-ghc-9.6-cabal-${{ hashFiles('**/*.cabal') }}
+          restore-keys: |
+            ${{ runner.os }}-ghc-9.6-cabal-
+
+      - name: Build haddocks
+        run: cabal haddock all --haddock-hyperlink-source
+
+      - name: Collect haddocks
+        run: |
+          mkdir -p docs/stringfmt docs/logfmt docs/vtyfmt
+          cp -r dist-newstyle/build/x86_64-linux/ghc-*/stringfmt-*/doc/html/stringfmt/* docs/stringfmt/ || true
+          cp -r dist-newstyle/build/x86_64-linux/ghc-*/logfmt-*/doc/html/logfmt/* docs/logfmt/ || true
+          cp -r dist-newstyle/build/x86_64-linux/ghc-*/vtyfmt-*/doc/html/vtyfmt/* docs/vtyfmt/ || true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: haddock
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
