@@ -598,21 +598,21 @@ layoutSmart opts doc = case best 0 0 [CDoc 0 doc] of
         Column f -> best nl cc (CDoc i (f cc) : rest)
         Nesting f -> best nl cc (CDoc i (f i) : rest)
 
--- | Multi-line lookahead: checks fitting beyond the first line break.
---
--- After a line break, continues checking if the content on the
--- next line fits — but only if the next line is more deeply
--- indented than the current nesting level. Stops when it finds
--- a line at the same or shallower indentation.
-fitsSmart :: Int -> Int -> [Token m ann] -> Bool
-fitsSmart _ w _ | w < 0 = False
-fitsSmart _ _ [] = True
-fitsSmart nl _ (TLine i : rest)
-    | i > nl = fitsSmart nl (i) rest  -- deeper: keep checking
-    | otherwise = True                 -- same or shallower: done
-fitsSmart nl w (TLeaf len _ : rest) = fitsSmart nl (w - len) rest
-fitsSmart nl w (TAnnPush _ : rest) = fitsSmart nl w rest
-fitsSmart nl w (TAnnPop : rest) = fitsSmart nl w rest
+    -- | Multi-line lookahead: checks fitting beyond the first line break.
+    --
+    -- After a line break, continues checking if the content on the
+    -- next line fits — but only if the next line is more deeply
+    -- indented than the current nesting level. Stops when it finds
+    -- a line at the same or shallower indentation.
+    fitsSmart :: Int -> Int -> [Token m ann] -> Bool
+    fitsSmart _ w _ | w < 0 = False
+    fitsSmart _ _ [] = True
+    fitsSmart nl _ (TLine i : rest)
+        | i > nl = fitsSmart nl (availableWidth i i) rest  -- deeper: recalculate width
+        | otherwise = True                                  -- same or shallower: done
+    fitsSmart nl w (TLeaf len _ : rest) = fitsSmart nl (w - len) rest
+    fitsSmart nl w (TAnnPush _ : rest) = fitsSmart nl w rest
+    fitsSmart nl w (TAnnPop : rest) = fitsSmart nl w rest
 
 -- | Compact layout: no width-sensitivity, always breaks.
 --
